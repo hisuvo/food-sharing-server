@@ -24,12 +24,23 @@ async function run() {
     const database = client.db("foodShareDB");
     const foodsCollection = database.collection("foods");
 
+    app.get("/foods", async (req, res) => {
+      const result = await foodsCollection.find().toArray();
+      res.send(result);
+    });
+
     app.get("/foods/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
-      const result = await foodsCollection.find(filter).toArray();
-      console.log(result);
+      const result = await foodsCollection.findOne(filter);
       res.send(result);
+    });
+
+    // post food data
+    app.post("/add-foods", async (req, res) => {
+      const data = req.body;
+      const reslut = await foodsCollection.insertOne(data);
+      res.send(reslut);
     });
 
     // Send a ping to confirm a successful connection
