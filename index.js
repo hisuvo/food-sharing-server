@@ -23,6 +23,7 @@ async function run() {
   try {
     const database = client.db("foodShareDB");
     const foodsCollection = database.collection("foods");
+    const requestCollection = database.collection("request");
 
     app.get("/foods", async (req, res) => {
       const result = await foodsCollection.find().toArray();
@@ -41,6 +42,16 @@ async function run() {
       const data = req.body;
       const reslut = await foodsCollection.insertOne(data);
       res.send(reslut);
+    });
+
+    // =================================
+    //   REQUEST COLLECTION SERVER APIS
+    // =================================
+
+    app.post("/request-foods", async (req, res) => {
+      const requestData = req.body;
+      const result = await requestCollection.insertOne(requestData);
+      res.send(result);
     });
 
     // Send a ping to confirm a successful connection
