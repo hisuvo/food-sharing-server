@@ -52,6 +52,14 @@ async function run() {
       res.send(reslut);
     });
 
+    // delete food from in db
+    app.delete("/food/:id", async (req, res) => {
+      const id = req.params.id;
+      const quary = { _id: new ObjectId(id) };
+      const reslut = await foodsCollection.deleteOne(quary);
+      res.send(reslut);
+    });
+
     // =================================
     //   REQUEST COLLECTION SERVER APIS
     // =================================
