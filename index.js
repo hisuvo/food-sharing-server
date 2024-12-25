@@ -37,6 +37,19 @@ async function run() {
       res.send(result);
     });
 
+    // update food data in db
+    app.put("/update-foods/:id", async (req, res) => {
+      const id = req.params.id;
+      const foodData = req.body;
+      const update = {
+        $set: foodData,
+      };
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const result = await foodsCollection.updateOne(filter, update, options);
+      res.send(result);
+    });
+
     // get donator email specifice manage food api
     app.get("/manage-foods/:email", async (req, res) => {
       const email = req.params.email;
