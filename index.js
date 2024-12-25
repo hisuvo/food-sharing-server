@@ -26,7 +26,19 @@ async function run() {
     const requestCollection = database.collection("request");
 
     app.get("/foods", async (req, res) => {
-      const result = await foodsCollection.find().toArray();
+      const search = req.query.search;
+      const sort = req.query.sort;
+
+      let options = {};
+      if (sort) options = { sort: { expireDate: sort === "asc" ? 1 : -1 } };
+
+      let query = {
+        name: {
+          $regex: search,
+          $options: "i",
+        },
+      };
+      const result = await foodsCollection.find(query, options).toArray();
       res.send(result);
     });
 
