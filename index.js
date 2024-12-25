@@ -37,6 +37,14 @@ async function run() {
       res.send(result);
     });
 
+    // get donator email specifice manage food api
+    app.get("/manage-foods/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { "donor.email": email };
+      const result = await foodsCollection.find(filter).toArray();
+      res.send(result);
+    });
+
     // post food data
     app.post("/add-foods", async (req, res) => {
       const data = req.body;
