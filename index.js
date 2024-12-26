@@ -2,7 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const app = express();
 const port = process.env.PORT || 9500;
 
@@ -26,22 +26,10 @@ async function run() {
     const foodsCollection = database.collection("foods");
     const requestCollection = database.collection("request");
 
-    // generate jwt
-    // app.post("/jwt", async (req, res) => {
-    //   const email = req.body;
-    //   // create token
-    //   const token = jwt.sign(email, process.env.SECRET_KEY, {
-    //     expiresIn: "1h",
-    //   });
-
-    //   res
-    //     .cookie("token", token, {
-    //       httpOnly: true,
-    //       secure: process.env.NODE_ENV === "productions",
-    //       sameSite: process.env.NODE_ENV === "productions" ? "none" : "strict",
-    //     })
-    //     .send({ success: true });
-    // });
+    app.get("/food", async (req, res) => {
+      const result = await foodsCollection.find().toArray();
+      res.send(result);
+    });
 
     app.get("/foods", async (req, res) => {
       const search = req.query.search;
@@ -98,6 +86,7 @@ async function run() {
     });
 
     // get donator email specifice manage food api
+
     app.get("/manage-foods/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { "donor.email": email };
@@ -108,6 +97,8 @@ async function run() {
     // post food data
     app.post("/add-foods", async (req, res) => {
       const data = req.body;
+      console.log(data);
+
       const reslut = await foodsCollection.insertOne(data);
       res.send(reslut);
     });
@@ -140,7 +131,7 @@ async function run() {
     });
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
