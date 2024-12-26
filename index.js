@@ -2,6 +2,7 @@ const express = require("express");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 const app = express();
 const port = process.env.PORT || 9500;
 
@@ -25,9 +26,28 @@ async function run() {
     const foodsCollection = database.collection("foods");
     const requestCollection = database.collection("request");
 
+    // generate jwt
+    // app.post("/jwt", async (req, res) => {
+    //   const email = req.body;
+    //   // create token
+    //   const token = jwt.sign(email, process.env.SECRET_KEY, {
+    //     expiresIn: "1h",
+    //   });
+
+    //   res
+    //     .cookie("token", token, {
+    //       httpOnly: true,
+    //       secure: process.env.NODE_ENV === "productions",
+    //       sameSite: process.env.NODE_ENV === "productions" ? "none" : "strict",
+    //     })
+    //     .send({ success: true });
+    // });
+
     app.get("/foods", async (req, res) => {
       const search = req.query.search;
       const sort = req.query.sort;
+      const page = parseInt(req.query.page);
+      const size = parseInt(req.query.size);
 
       let options = {};
       if (sort) options = { sort: { expireDate: sort === "asc" ? 1 : -1 } };
@@ -38,8 +58,17 @@ async function run() {
           $options: "i",
         },
       };
-      const result = await foodsCollection.find(query, options).toArray();
+      const result = await foodsCollection
+        .find(query, options)
+        .skip(page * size)
+        .limit(size)
+        .toArray();
       res.send(result);
+    });
+
+    app.get("/feature-foods", async (req, res) => {
+      const reslut = await foodsCollection.find().toArray();
+      res.send(reslut);
     });
 
     app.get("/foods/:id", async (req, res) => {
@@ -47,6 +76,12 @@ async function run() {
       const filter = { _id: new ObjectId(id) };
       const result = await foodsCollection.findOne(filter);
       res.send(result);
+    });
+
+    // get food conunt api
+    app.get("/foods-count", async (req, res) => {
+      const result = await foodsCollection.estimatedDocumentCount();
+      res.send({ count: result });
     });
 
     // update food data in db
