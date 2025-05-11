@@ -22,6 +22,8 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    // await client.connect();
+
     const database = client.db("foodShareDB");
     const foodsCollection = database.collection("foods");
     const requestCollection = database.collection("request");
@@ -42,8 +44,9 @@ async function run() {
 
       let query = {
         name: {
-          $regex: search,
-          $options: "i",
+          // $regex: search,
+          // $options: "i",
+          $regex: new RegExp(search, "i"),
         },
       };
       const result = await foodsCollection
@@ -132,9 +135,9 @@ async function run() {
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
   }
