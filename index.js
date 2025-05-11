@@ -100,8 +100,6 @@ async function run() {
     // post food data
     app.post("/add-foods", async (req, res) => {
       const data = req.body;
-      console.log(data);
-
       const reslut = await foodsCollection.insertOne(data);
       res.send(reslut);
     });
@@ -122,6 +120,12 @@ async function run() {
     app.post("/request-foods", async (req, res) => {
       const requestData = req.body;
       const result = await requestCollection.insertOne(requestData);
+      res.send(result);
+    });
+
+    // get all request food api
+    app.get("/all-request-foods", async (req, res) => {
+      const result = await requestCollection.find().toArray();
       res.send(result);
     });
 
